@@ -1,10 +1,13 @@
 import {
     CREATE_NOTE,
-    UPDATE_NOTE
+    UPDATE_NOTE,
+    OPEN_NOTE,
+    CLOSE_NOTE
 } from './constants.js';
 
 const initialState = {
     nextNoteId: 1,
+    openNoteId: null,
     notes: {}
 };
 
@@ -20,6 +23,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 nextNoteId: id + 1,
+                openNoteId: id,
                 notes: {
                     ...state.notes,
                     [id]: newNote
@@ -39,6 +43,18 @@ const reducer = (state = initialState, action) => {
                     ...state.notes,
                     [id]: editedNote
                 }
+            };
+        }
+        case OPEN_NOTE: {
+            return {
+                ...state,
+                openNoteId: action.payload.id
+            };
+        }
+        case CLOSE_NOTE: {
+            return {
+                ...state,
+                openNoteId: null
             };
         }
         default:

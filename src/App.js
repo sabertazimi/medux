@@ -1,12 +1,20 @@
 import React from 'react';
 
 import store from './store.js';
+import createAction from './action.js';
+import {
+    CREATE_NOTE,
+    UPDATE_NOTE,
+    OPEN_NOTE,
+    CLOSE_NOTE
+} from './constants.js';
+import { create } from 'domain';
 
 const NoteEditor = ({
     note,
     onChangeNote,
     onCloseNote
-}) => {
+}) => (
     <div>
         <div>
             <textarea
@@ -20,7 +28,7 @@ const NoteEditor = ({
         </div>
         <button className="editor-button" onClick={onCloseNote}>Close</button>
     </div>
-};
+);
 
 const NoteTitle = ({
     note
@@ -37,18 +45,18 @@ const NoteTitle = ({
 const NoteLink = ({
     note,
     onOpenNote
-}) => {
+}) => (
     <li className="note-list-item">
         <a href="#" onClick={() => onOpenNote(note.id)}>
             <NoteTitle note={note} />
         </a>
     </li>
-};
+);
 
 const NoteList = ({
     notes,
     onOpenNote
-}) => {
+}) => (
     <ul className="note-list">
     {
         Object.keys(notes).map(id =>
@@ -60,7 +68,7 @@ const NoteList = ({
         )
     }
     </ul>
-};
+);
 
 const NoteApp = ({
     notes,
@@ -69,7 +77,7 @@ const NoteApp = ({
     onChangeNote,
     onOpenNote,
     onCloseNote
-}) => {
+}) => (
     <div>
         {
             openNoteId ?
@@ -84,31 +92,53 @@ const NoteApp = ({
                 </div>
         }
     </div>
-};
+);
 
 export default class App extends React.Component {
     constructor(props) {
         super(props);
+        this.state = props.store.getState();
+        this.onAddNote = this.onAddNote.bind(this);
+        this.onChangeNote = this.onChangeNote.bind(this);
+        this.onOpenNote = this.onOpenNote.bind(this);
+        this.onCloseNote = this.onCloseNote.bind(this);
+    }
+    
+    componentWillMount() {
+        this.unsubscribe = this.props.store.subscribe(() => {
+            this.setState(this.props.store.getState());
+        });
     }
 
-    componentDidUpdate() {
-        console.log('> componentDidUpdate ...');
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
+    onAddNote() {
+        this.props.store.dispatch(createAction(CREATE_NOTE));
+    }
+
+    onChangeNote(id, content) {
+        this.props.store.dispatch(createAction(UPDATE_NOTE, id, content));
+    }
+
+    onOpenNote(id) {
+        this.props.store.dispatch(createAction(OPEN_NOTE, id));
+    }
+
+    onCloseNote() {
+        this.props.store.dispatch(createAction(CLOSE_NOTE));
     }
 
     render() {
-        const { notes } = store.getState();
-
         return (
-            <div>
-                React x Medux
-                <ul>
-                    {
-                        Object.values(notes).map((note) => {
-                            return <li key={note.id}>{note.content}</li>
-                        })
-                    }
-                </ul>
-            </div>
+            <NoteApp
+                {...this.state}
+                onAddNote={this.onAddNote}
+                onChangeNote={this.onChangeNote}
+                onOpenNote={this.onOpenNote}
+                onCloseNote={this.onCloseNote}
+            />
         )
     }
 }
