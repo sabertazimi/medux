@@ -12,12 +12,6 @@ const createStore = (reducer) => {
     const store = {
         dispatch: (action) => {
             validateAction(action);
-
-            switch (action.type) {
-                case INIT_MEDUX:
-                    console.log('> initializing medux ...');
-            }
-
             state = reducer(state, action);
             subscribers.forEach(handler => handler());
         },
