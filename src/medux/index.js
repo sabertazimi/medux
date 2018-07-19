@@ -1,7 +1,13 @@
 import {
-    createStore
+    createStore,
 } from './store.js';
+import {
+    Provider,
+    connect
+} from './connect.js';
 
 export {
-    createStore
+    createStore,
+    Provider,
+    connect
 };
