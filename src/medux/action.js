@@ -1,3 +1,7 @@
+const isValidKey = (key) => {
+    return ['type', 'payload', 'error', 'meta'].indexOf(key) > -1;
+};
+
 const validateAction = (action) => {
     if (!action || typeof action !== 'object' || Array.isArray(action)) {
         throw new Error('Action must be an object!');
@@ -10,10 +14,6 @@ const validateAction = (action) => {
     if (!Object.keys(action).every(isValidKey)) {
         throw new Error('Action can only have `type`, `payload`, `error` or `meta` field!');
     }
-};
-
-const isValidKey = (key) => {
-    return ['type', 'payload', 'error', 'meta'].indexOf(key) > -1;
 };
 
 export {
