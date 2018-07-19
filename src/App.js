@@ -1,6 +1,9 @@
 import React from 'react';
 
-import store from './store.js';
+import {
+    connect
+} from './medux';
+
 import createAction from './action.js';
 import {
     CREATE_NOTE,
@@ -8,7 +11,6 @@ import {
     OPEN_NOTE,
     CLOSE_NOTE
 } from './constants.js';
-import { create } from 'domain';
 
 const NoteEditor = ({
     note,
@@ -94,51 +96,29 @@ const NoteApp = ({
     </div>
 );
 
-export default class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = props.store.getState();
-        this.onAddNote = this.onAddNote.bind(this);
-        this.onChangeNote = this.onChangeNote.bind(this);
-        this.onOpenNote = this.onOpenNote.bind(this);
-        this.onCloseNote = this.onCloseNote.bind(this);
-    }
-    
-    componentWillMount() {
-        this.unsubscribe = this.props.store.subscribe(() => {
-            this.setState(this.props.store.getState());
-        });
-    }
+const mapStateToProps = (state) => ({
+    notes: state.notes,
+    openNoteId: state.openNoteId
+});
 
-    componentWillUnmount() {
-        this.unsubscribe();
+const mapDispatchToProps = (dispatch) => ({
+    onAddNote: () => {
+        dispatch(createAction(CREATE_NOTE));
+    },
+    onChangeNote: (id, content) => {
+        dispatch(createAction(UPDATE_NOTE, id, content));
+    },
+    onOpenNote: (id) => {
+        dispatch(createAction(OPEN_NOTE, id));
+    },
+    onCloseNote: () => {
+        dispatch(createAction(CLOSE_NOTE));
     }
+});
 
-    onAddNote() {
-        this.props.store.dispatch(createAction(CREATE_NOTE));
-    }
+const App = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(NoteApp);
 
-    onChangeNote(id, content) {
-        this.props.store.dispatch(createAction(UPDATE_NOTE, id, content));
-    }
-
-    onOpenNote(id) {
-        this.props.store.dispatch(createAction(OPEN_NOTE, id));
-    }
-
-    onCloseNote() {
-        this.props.store.dispatch(createAction(CLOSE_NOTE));
-    }
-
-    render() {
-        return (
-            <NoteApp
-                {...this.state}
-                onAddNote={this.onAddNote}
-                onChangeNote={this.onChangeNote}
-                onOpenNote={this.onOpenNote}
-                onCloseNote={this.onCloseNote}
-            />
-        )
-    }
-}
+export default App;
