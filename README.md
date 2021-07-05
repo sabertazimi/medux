@@ -1,6 +1,6 @@
 # medux
 
-[![Build Status](https://travis-ci.org/sabertazimi/medux.svg?branch=master)](https://travis-ci.org/sabertazimi/medux)
+[![Continuous Integration](https://github.com/sabertazimi/medux/actions/workflows/ci.yml/badge.svg)](https://github.com/sabertazimi/medux/actions/workflows/ci.yml)
 
 Minimal redux-like library
 
